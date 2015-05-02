@@ -1,0 +1,290 @@
+<html>
+<head>
+<meta name="generator" content=
+"HTML Tidy for Java (vers. 2009-12-01), see jtidy.sourceforge.net">
+<title>CIS 455 / 555: Internet and Web Systems (Spring
+2015)</title>
+<meta http-equiv="content-type" content=
+"text/html;charset=ISO-8859-1">
+</head>
+<body bgcolor="white" text="black" link="black" vlink="black">
+<table border="0" padding="0" cellborder="0" class="smallbodytext"
+cellpadding="0" width="100%">
+<tr>
+<td width="150" height="1"></td>
+<td width="10" height="1"></td>
+<td height="1"></td>
+</tr>
+<tr>
+<td align="right"></td>
+<td></td>
+<td><nobr><img src="img/pic2.jpg" width="150" height="150"> <img
+src="img/pic1.jpg" width="150" height="150"> <img src=
+"img/pic3.jpg" width="150" height="150"> <img src="img/pic4.jpg"
+width="150" height="150"> <img src="img/pic5.jpg" width="150"
+height="150"></nobr><br>
+ 
+<h2>CIS 455 / 555: Internet and Web Systems (Spring 2015)</h2>
+</td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color=
+"black"><b>Instructor</b></font></td>
+<td></td>
+<td><a href="http://www.cis.upenn.edu/~zives">Zachary Ives</a><br>
+ Location: 576 <a href=
+"http://maps.google.com/maps?&amp;q=Graduate%20Research%20Wing%20of%20the%20Moore%20School@39.95242345,+-75.19091719">Levine
+Hall</a><br>
+Office hour: Wednesdays 1:30-2:30pm</td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color="black"><b>Time and
+location</b></font></td>
+<td></td>
+<td>Location: <a href=
+"https://www.isc-cts.upenn.edu/finder/classroominfo.asp?id=TOWN-100">101
+Towne (Heilmeier Hall)</a><br>
+Monday/Wednesday/Friday 11am&#160;-&#160;noon</td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color="black"><b>Teaching
+assistants</b></font></td>
+<td></td>
+<td>As you know there is a space challenge in SEAS. Unless
+announced in advance, all office hours are in the <strike>Levine
+North 5th Floor</strike> Levine 6th Floor "bump space" near the
+elevator. If the TA isn't there, please look on the board for an
+alternate space, or email us. We appreciate your patience.<br>
+
+<br>
+
+ Avani Deshpande, avanid@seas, Office Hours Wednesday 5:00-6:00<br>
+
+ Shengda Ding, shengda@seas, Office Hours Thursday 1:30-2:30<br>
+
+ Shruthi Gorantala, shruthig@seas, Office Hours Tuesday
+6:00-7:00<br>
+
+ Akshay Hegde, ahegde@seas, Office Hours Monday 5:00-6:00<br>
+
+ Mounica Maddela, mounicam@seas, Office Hours Friday 6:00-7:00<br>
+
+<br>
+
+</td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color="black"><b>Course
+description</b></font></td>
+<td></td>
+<td>This course focuses on the issues encountered in building
+Internet and web systems: scalability, interoperability (of data
+and code), atomicity and consistency models, replication, and
+location of resources, services, and data. Note that it is
+<i>not</i> about building database-backed or PHP/JSP/Servlet-based
+web sites (for this, see 
+<!-- <a href="http://www.cis.upenn.edu/~cis330/"> -->CIS&#160;<a
+href="http://www.cis.upenn.edu/~cis550/">450/550</a> or <a href=
+"http://www.cis.upenn.edu/~nets212/">NETS&#160;212</a>). Here, we
+will learn how a Servlet server <i>itself</i> is built!
+<p>We will examine how XML standards enable information exchange;
+how web services support cross-platform interoperability (and what
+their limitations are); how "cloud computing" services work; how to
+do replication and Akamai-like content distribution; and how
+application servers provide transaction support in distributed
+environments. We will study techniques for locating machines,
+resources, and data (including directory systems, information
+retrieval indexing and ranking, web search, and publish/subscribe
+systems); we will discuss collaborative filtering and mining the
+Web for patterns; we will investigate how different architectures
+support scalability (and the issues they face). We will also
+examine the ideas that have been proposed for tomorrow's Web,
+including the "Semantic Web", and see some of the challenges,
+research directions, and potential pitfalls.</p>
+<p>An important goal of the course is not simply to discuss issues
+and solutions, but to provide hands-on experience with a
+substantial implementation project. This semester's project will be
+a peer-to-peer implementation of a Googe-style search engine,
+including distributed, scalable crawling; indexing with ranking;
+and even PageRank. We will also incorporate the use of
+topic-specific recognizers and mash-ups.</p>
+<p>As a side effect of the material of this course, you will learn
+about some aspects of large-scale software development:
+assimilating large APIs, thinking about modularity, reading other
+people's code, managing versions, debugging, and so on.</p>
+<p>CIS555 is now a core course for the MSE degree; for details,
+please see the <a href=
+"http://www.cis.upenn.edu/grad/gradhandbook.shtml#MSE">MSE
+requirements</a>. The Daily Pennsylvanian recently published a nice
+<a href=
+"http://www.thedp.com/article/2012/11/company-sponsored-computer-science-courses-offer-students-new-way-to-learn">article
+about CIS455/555</a>.</p>
+</td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color=
+"black"><b>Format</b></font></td>
+<td></td>
+<td>The format will be three 1-hour lectures per week, plus
+assigned readings from handouts. There will be regular homework
+assignments and a substantial implementation project with
+experimental validation and a report. There will also be a midterm
+and a final exam.</td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color=
+"black"><b>Prerequisites</b></font></td>
+<td></td>
+<td>This course expects familiarity with threads and concurrency,
+as well as strong Java programming skills. Those highly proficient
+in another programming language, such as C++ or C#, should be able
+to translate their skills easily. The course will require a
+considerable amount of programming, as well as the ability to work
+with your classmates in teams.</td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color=
+"black"><b>Texts&#160;and&#160;readings</b></font></td>
+<td></td>
+<td><a href=
+"http://www.amazon.com/Distributed-Systems-Principles-Paradigms-2nd/dp/0132392275">Distributed
+Systems: Principles and Paradigms, 2nd ed</a>, by Tanenbaum and van
+Steen, Prentice Hall<br>
+ Additional materials will be provided as handouts or in the form
+of light technical papers.</td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color=
+"black"><b>Grading</b></font></td>
+<td></td>
+<td>Homework 32%, midterm 15%, final exam 15%, project 33%,
+participation 5%.</td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color="black"><b>Other
+resources</b></font></td>
+<td></td>
+<td>We will be using <a href="http://www.piazza.com/">Piazza</a>
+for course-related discussions; please sign up <a href=
+"http://piazza.com/upenn/spring2015/cis455555">here</a>. 
+<!--  A <a href="reading.html">reading list</a> is also available.-->
+</td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color=
+"black"><b>Assignments</b></font></td>
+<td></td>
+<td>The <a href="assignments.html">homework assignments</a> will be
+available here.</td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color="black"><b>Final
+project</b></font></td>
+<td></td>
+<td>Wondering what you will be able to do at the end of this class?
+Here is an example from Spring 2013: 
+<table border="0" width="540">
+<tr>
+<td colspan="3"></td>
+</tr>
+<tr height="120">
+<td width="340" rowspan="3"><a href="img/award-2013/team.jpg"><img
+border="0" src="img/award-2013/team.jpg" width="340" height="270"
+title=
+"From left to right: Brandon, Edward, Steven, and Mitchell"></a></td>
+<td width="20" rowspan="4">&#160;</td>
+<td width="180" valign="top"><a href=
+"img/award-2013/screenshot-1.png"><img border="0" src=
+"img/award-2013/screenshot-1.png" width="180" height=
+"120"></a></td>
+</tr>
+<tr height="30">
+<td width="180" valign="top" height="30">
+<center>70! result with preview</center>
+</td>
+</tr>
+<tr height="120">
+<td width="180" valign="bottom"><a href=
+"img/award-2013/screenshot-2.png"><img border="0" src=
+"img/award-2013/screenshot-2.png" width="180" height=
+"120"></a></td>
+</tr>
+<tr height="30">
+<td width="340" valign="top">
+<center>Brandon, Edward, Steven, and Mitchell</center>
+</td>
+<td width="180" valign="top">
+<center>70! result with video</center>
+</td>
+</tr>
+</table>
+Brandon Krieger, Steven Krouse, Mitchell Stern, and Edward
+Wadsworth built "70!", a cloud-based search engine. 70! consists of
+1) a scalable distributed crawler that runs on Amazon EC2 instances
+and uses FreePastry for coordination; 2) an indexer and a PageRank
+engine that is based on Elastic MapReduce; and 3)&#160;a web
+frontend. Hitchhiker can show previews of the results it returns,
+and it supports voice-controlled search; as a special feature,
+users can navigate the results by 'swiping' with their hands in
+front of a webcam.</td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color=
+"black"><b>Schedule</b></font></td>
+<td></td>
+<td><iframe src=
+"https://docs.google.com/spreadsheets/d/1V6AQ6IfF1DK3b8D2uyioqVa-CgrMhfDmf4GuQg9_5WE/pubhtml?widget=true&amp;headers=false"
+ width="1040" height="1468"></iframe></td>
+</tr>
+<tr>
+<td colspan="3" height="15"></td>
+</tr>
+<tr>
+<td align="right" valign="top"><font color="black"><b>Previous
+versions (recently taught by Prof. Haeberlen)</b></font></td>
+<td></td>
+<td><a href="http://www.cis.upenn.edu/~cis455/spring14/">Spring
+2014</a>&#160;|&#160; <a href=
+"http://www.cis.upenn.edu/~ahae/teaching/cis455-s13/">Spring
+2013</a>&#160;|&#160; <a href=
+"http://www.cis.upenn.edu/~ahae/teaching/cis455-s12/">Spring
+2012</a>&#160;|&#160; <a href=
+"http://www.cis.upenn.edu/~ahae/teaching/cis455-s11/">Spring
+2011</a></td>
+</tr>
+</table>
+</body>
+</html>
