@@ -14,8 +14,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.StringReader;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,11 +53,12 @@ import edu.upenn.cis455.xpathengine.XPathEngineImpl;
 public class XPathCrawler {
 	
 	public final static String CRAWLER_USER_AGENT = "cis455crawler";
+	public final static String AMAZON_S3_BUCKET_NAME = "cis455docs";
 	
 	static LinkedList<String> urlsToCrawl;
 	static HashSet<String> visitedUrls;
-	static double numFilesCrawled;
-	static double numFilesToCrawl;
+	static long numFilesCrawled;
+	static long numFilesToCrawl;
 	static RobotsTxtInfo robotsTxtInfo;
 	static double maxDocSize;
 		
@@ -65,7 +69,7 @@ public class XPathCrawler {
 		DBWrapper.setDirectory(databaseDirectory);
 		maxDocSize = Double.parseDouble(args[2]);
 		if (args.length > 3) {
-			numFilesToCrawl = Double.parseDouble(args[3]);
+			numFilesToCrawl = Long.parseLong(args[3]);
 		} else {
 			numFilesToCrawl = -1;
 		}
@@ -76,7 +80,15 @@ public class XPathCrawler {
 		urlsToCrawl.add(startingURL);		
 		robotsTxtInfo = new RobotsTxtInfo();
 		
-		crawl();
+		try {
+			crawl();
+		} catch(Exception e) {
+			System.out.println("FATAL EXCEPTION, ABORTING CRAWL.");
+			e.printStackTrace();
+		}
+		
+		//crawl finished
+		System.out.println("CRAWL FINISHED; " + numFilesCrawled + " FILES CRAWLED.");
 		
 	}
 	
@@ -93,16 +105,9 @@ public class XPathCrawler {
 			} else {
 				crawlHttp(nextURL);
 			}
-			
-			
-			
-			
-			
-			//send header
-			//check for robots
-			//get file
-			//extract links
+
 		}
+		
 		
 	}
 	
@@ -170,34 +175,22 @@ public class XPathCrawler {
 			output.flush();
 			
 			String robotsText = "";
-			HashMap<String, String> robotsHeaders = new HashMap<String, String>();
 
-
-			line = input.readLine();
-			if (line.toLowerCase().startsWith("http")) {
-				while ((line = input.readLine()) != null && !line.equals("") && 
-						!( line.equals("!DOCTYPE") || line.toLowerCase().equals("<html>") ) ) {
-					int i = line.indexOf(":");
-					if (i > 0) {
-						//System.out.println(line);
-						robotsHeaders.put(line.substring(0, i).toLowerCase(), line.substring(i+2));
-					} else break;
-					line = input.readLine();
-				}
-			} else {
-				robotsText += line;
-			}
-			
-			
-			
+			String robotsHeadersString = "";
 			String nextLine = input.readLine();
+			while ((nextLine = input.readLine()) != null && !nextLine.equals("")) {
+				robotsHeadersString += nextLine + "\n";
+			}
+			HashMap<String, String> robotsHeaders = parseHeaders(robotsHeadersString);
 			while (nextLine != null) {
 				robotsText += nextLine;
 				robotsText += "\n";
 				nextLine = input.readLine();
 			}
 			
-			RobotsTxtInfo robotsTxtInfo;
+			RobotsTxtInfo robotsTxtInfo = getNewestRobots(robotsHeaders, nextURLInfo.getHostName(), robotsText);
+
+			/*
 			String lastModified = robotsHeaders.get("last-modified");
 			if (RobotsRecords.robotsLastModified.get(nextURLInfo.getHostName()) != null &&
 					convertDate(lastModified) <= RobotsRecords.robotsLastModified.get(nextURLInfo.getHostName()) ) {
@@ -207,12 +200,11 @@ public class XPathCrawler {
 				RobotsRecords.robotsTxtInfo.put(nextURLInfo.getHostName(), robotsTxtInfo);
 				RobotsRecords.robotsLastModified.put(nextURLInfo.getHostName(), convertDate(lastModified));
 			}
+			*/
 			
 			//RobotsTextFile robotsTextFile = new RobotsTextFile(input);
 			
-			
 			// Check if we can crawl it
-			System.out.println(robotsTxtInfo.canCrawlUrl(CRAWLER_USER_AGENT, nextURLInfo));
 			if (!robotsTxtInfo.canCrawlUrl(CRAWLER_USER_AGENT, nextURLInfo)) {
 				System.out.printf("Not allowed to crawl path \"%s\" on \"%s\" by robots.txt.\n", nextURLInfo.getFilePath(), nextURLInfo.getHostName());
 				return;
@@ -245,9 +237,7 @@ public class XPathCrawler {
 			output = new BufferedWriter(new OutputStreamWriter(myClient.getOutputStream(), "UTF8"));
 			
 			numFilesCrawled++;
-			visitedUrls.add(nextURL);
-			System.out.println("Crawling: " + nextURL);
-			
+			visitedUrls.add(nextURL);			
 			
 			output.write("GET " + nextURLInfo.getFilePath() + " HTTP/1.0\r\n");
 			output.write("User-Agent: cis455crawler\r\n");
@@ -255,23 +245,41 @@ public class XPathCrawler {
 			output.flush();
 			
 			StringBuilder sb = new StringBuilder();
+			
+			//Get rid of headers from response
+			while ((line = input.readLine()) != null && !line.equals("")) {
+				
+			}
+			
+			/* THIS WAY DOES NOT WORK because docs can start with other things (ie <!DOCTYPE html>)
 			while ((line = input.readLine()) != null && 
 					!( line.equals("!DOCTYPE") || line.toLowerCase().equals("<html>") ) ) {
 				
 			}
-			sb.append(line);
+			*/
+			
+			sb.append(line); //append either !DOCTYPE or <html>
 			while ((line = input.readLine()) != null) {
 	            sb.append(line);
 	            sb.append("\n");
 	        }
 			String htmlString = sb.toString();
-			InputStream inputStream = new ByteArrayInputStream(htmlString.getBytes(Charset.forName("UTF-8")));
+			if (htmlString != null && !htmlString.equals("null")) {
+				AmazonS3Uploader.uploadFile(htmlString, AMAZON_S3_BUCKET_NAME, nextURL);
+			} else {
+				System.out.println("null");
+			}
 			
+			System.out.println("Crawling: " + nextURL);
+
+			//Set up tidy for parsing
+			InputStream inputStream = new ByteArrayInputStream(htmlString.getBytes(Charset.forName("UTF-8")));
 			File out = new File("output.txt");
 		    FileOutputStream Fos = new FileOutputStream(out);
 		    Tidy t = new Tidy(); // obtain a new Tidy instance
-			t.setQuiet(true);
 			t.setShowWarnings(false);
+			t.setHideComments(true);
+			t.setQuiet(true);
 			Document d;
 			
 			/*
@@ -302,15 +310,18 @@ public class XPathCrawler {
 			*/
 			
 			d = t.parseDOM(inputStream, Fos);
+			//Add all links in page to queue
 			try {
 				//if (d != null && d.getDoctype().getNodeName().startsWith("html")) {
 					NodeList links = d.getElementsByTagName("a");
 					for (int i = 0; i < links.getLength(); i++) {
-						System.out.println("--Adding to queue: " + links.item(i).getAttributes().getNamedItem("href").getNodeValue());
+						if (links.item(i).getAttributes().getNamedItem("href") == null) {
+							continue;
+						}
 						String newLink = links.item(i).getAttributes().getNamedItem("href").getNodeValue();
 						if (newLink.startsWith("http")) {
-							urlsToCrawl.add(newLink);
-						} else {
+							addToCrawlQueue(newLink);
+						} else { //relative link -> add hostname
 							String urlPath;
 							if (nextURL.endsWith(".html")) {
 								int j = nextURL.length()-1;
@@ -325,20 +336,29 @@ public class XPathCrawler {
 									urlPath = nextURL;
 								}
 							}
-							urlsToCrawl.add(urlPath + newLink);
+							addToCrawlQueue(urlPath + newLink);
 						}
 						
 					//}
 				}
 			} catch (NullPointerException e) {
-				System.err.println("null pointer exception parsing doc");
+				System.err.println("null pointer exception parsing http doc");
 				e.printStackTrace();
 			}
-			
-	
-			
+
+		} catch (FileNotFoundException e) {
+			System.err.println("File not found at url: " + nextURL);
+			visitedUrls.add(nextURL);
+		}  catch (UnknownHostException e) {
+			System.err.println("Unknown Host at url: " + nextURL);
+			visitedUrls.add(nextURL);
+		}  catch (ConnectException e) {
+			System.err.println("Failed to connect to url: " + nextURL);
+			visitedUrls.add(nextURL);
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("IOException at: " + nextURL);
+			System.out.println(e.getMessage());
+			visitedUrls.add(nextURL);
 		}
 	}
 	
@@ -412,7 +432,8 @@ public class XPathCrawler {
 					nextLine = input.readLine();
 				}
 				
-				RobotsTxtInfo robotsTxtInfo;
+				RobotsTxtInfo robotsTxtInfo = RobotsTxtInfo.parseRobotsTxtString(robotsText);
+				/*
 				long lastModified = connection.getLastModified();
 				if (RobotsRecords.robotsLastModified.get(nextURLInfo.getHostName()) != null &&
 						lastModified <= RobotsRecords.robotsLastModified.get(nextURLInfo.getHostName())) {
@@ -422,6 +443,7 @@ public class XPathCrawler {
 					RobotsRecords.robotsTxtInfo.put(nextURLInfo.getHostName(), robotsTxtInfo);
 					RobotsRecords.robotsLastModified.put(nextURLInfo.getHostName(), lastModified);
 				}
+				*/
 				//RobotsTextFile robotsTextFile = new RobotsTextFile(input);
 				
 				
@@ -431,6 +453,7 @@ public class XPathCrawler {
 					return;
 				}
 				
+				RobotsRecords.robotsTxtInfo.put(nextURLInfo.getHostName(), robotsTxtInfo);
 				if (!RobotsRecords.crawlDelayPassed(CRAWLER_USER_AGENT, nextURLInfo.getHostName())) {
 					urlsToCrawl.add(nextURL);
 					return;
@@ -464,21 +487,29 @@ public class XPathCrawler {
 
 				numFilesCrawled++;
 				visitedUrls.add(nextURL);
-				System.out.println("Crawling: " + nextURL);
 				
 				StringBuilder sb = new StringBuilder();
 				
 				while ((line = input.readLine()) != null) {
 		            sb.append(line);
+		            sb.append("\n");
 		        }
 				String htmlString = sb.toString();
+				if (htmlString != null && !htmlString.equals("null")) {
+					AmazonS3Uploader.uploadFile(htmlString, AMAZON_S3_BUCKET_NAME, nextURL);
+				} else {
+					System.out.println("null html string");
+				}
+				
+				System.out.println("Crawling: " + nextURL);
 				InputStream inputStream = new ByteArrayInputStream(htmlString.getBytes(Charset.forName("UTF-8")));
 				
 				File out = new File("output.txt");
 			    FileOutputStream Fos = new FileOutputStream(out);
 				Tidy t = new Tidy(); // obtain a new Tidy instance
-				t.setQuiet(true);
 				t.setShowWarnings(false);
+				t.setHideComments(true);
+				t.setQuiet(true);
 				Document d;
 				
 				/*
@@ -509,43 +540,116 @@ public class XPathCrawler {
 				
 				d = t.parseDOM(inputStream, Fos);
 				
-				if (d != null && d.getDoctype().getNodeName().startsWith("html")) {
-					NodeList links = d.getElementsByTagName("a");
-					for (int i = 0; i < links.getLength(); i++) {
-						System.out.println("--Adding to queue: " + links.item(i).getAttributes().getNamedItem("href").getNodeValue());
-						String newLink = links.item(i).getAttributes().getNamedItem("href").getNodeValue();
-						if (newLink.startsWith("http")) {
-							urlsToCrawl.add(newLink);
-						} else {
-							String urlPath;
-							if (nextURL.endsWith(".html")) {
-								int j = nextURL.length()-1;
-								while (nextURL.charAt(j) != '/') {
-									j--;
-								}
-								urlPath = nextURL.substring(0, j+1);
-							} else {
-								if (!nextURL.endsWith("/")) {
-									urlPath = nextURL + "/";
-								} else {
-									urlPath = nextURL;
-								}
+				try {
+					if (d != null && d.getDoctype().getNodeName().startsWith("html")) {
+						NodeList links = d.getElementsByTagName("a");
+						for (int i = 0; i < links.getLength(); i++) {
+							if (links.item(i).getAttributes().getNamedItem("href") == null) {
+								continue;
 							}
-							urlsToCrawl.add(urlPath + newLink);
+							String newLink = links.item(i).getAttributes().getNamedItem("href").getNodeValue();
+							if (newLink.startsWith("http")) {
+								addToCrawlQueue(newLink);
+							} else {
+								String urlPath;
+								if (nextURL.endsWith(".html")) {
+									int j = nextURL.length()-1;
+									while (nextURL.charAt(j) != '/') {
+										j--;
+									}
+									urlPath = nextURL.substring(0, j+1);
+								} else {
+									if (!nextURL.endsWith("/")) {
+										urlPath = nextURL + "/";
+									} else {
+										urlPath = nextURL;
+									}
+								}
+								addToCrawlQueue(urlPath + newLink);
+							}
+							
 						}
-						
 					}
+				} catch(NullPointerException e) {
+					System.err.println("null pointer exception parsing https doc");
+					e.printStackTrace();
 				}
 				
 
 				
+			}  catch (FileNotFoundException e) {
+				System.err.println("File not found at url: " + nextURL);
+				visitedUrls.add(nextURL);
+			}  catch (UnknownHostException e) {
+				System.err.println("Unknown host at url: " + nextURL);
+				visitedUrls.add(nextURL);
+			}  catch (ConnectException e) {
+				System.err.println("Failed to connect to url: " + nextURL);
+				visitedUrls.add(nextURL);
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.err.println("IOException at: " + nextURL);
+				System.out.println(e.getMessage());
+				visitedUrls.add(nextURL);
 			}
 		
 	}
 	
 	//private void openConnection
+	
+	private static HashMap<String, String> parseHeaders(String s){
+		try {
+			BufferedReader input = new BufferedReader(new StringReader(s));
+			String line = input.readLine();
+			HashMap<String, String> headers = new HashMap<String, String>();
+			while (line != null && !line.equals("")) {
+				int i = line.indexOf(":");
+				if (i > 0) {
+					System.out.println(line);
+					headers.put(line.substring(0, i).toLowerCase(), line.substring(i+2));
+				} else break;
+				line = input.readLine();
+			}
+			return headers;
+		} catch (IOException e) {
+			System.err.println("Problem parsing headers");
+		}
+		return null;
+	}
+	
+	private static RobotsTxtInfo getNewestRobots(HashMap<String, String> robotsHeaders, String hostname, String robotsText) {
+		long newLastModified = 0;
+		try {
+			String lastModified = robotsHeaders.get("last-modified");
+			newLastModified = convertDate(lastModified);
+			
+			RobotsTxtInfo oldRobotsTxtInfo = RobotsRecords.robotsTxtInfo.get(hostname);
+			long oldLastModified = oldRobotsTxtInfo.getLastModified();
+			
+			if (newLastModified > oldLastModified) {
+				RobotsTxtInfo robotsTxtInfo = RobotsTxtInfo.parseRobotsTxtString(robotsText);
+				robotsTxtInfo.setLastModified(newLastModified);
+				RobotsRecords.robotsTxtInfo.put(hostname, robotsTxtInfo);
+				return robotsTxtInfo;
+			} else {
+				return oldRobotsTxtInfo;
+			}
+		} catch (Exception e) {
+			RobotsTxtInfo robotsTxtInfo = RobotsTxtInfo.parseRobotsTxtString(robotsText);
+			robotsTxtInfo.setLastModified(newLastModified);
+			RobotsRecords.robotsTxtInfo.put(hostname, robotsTxtInfo);
+			return robotsTxtInfo;
+		}
+	}
+	
+	private static void addToCrawlQueue(String url) {
+		if (url.startsWith("#")) {
+			return;
+		}
+		if (!visitedUrls.contains(url)) {
+			System.out.println("--Adding to queue: " + url);
+			urlsToCrawl.add(url);
+		}
+	}
 	
 	private static boolean isAllowed(ArrayList<String> disallowed, String filepath) {
 		for (String s : disallowed) {

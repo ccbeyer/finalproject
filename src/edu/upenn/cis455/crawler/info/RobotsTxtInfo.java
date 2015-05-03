@@ -14,6 +14,7 @@ public class RobotsTxtInfo {
 	private HashMap<String,Integer> crawlDelays;
 	private ArrayList<String> sitemapLinks;
 	private ArrayList<String> userAgents;
+	private long lastModified;
 	
 	private final static int DEFAULT_DELAY = 5000;
 	
@@ -242,6 +243,14 @@ public class RobotsTxtInfo {
 		
 		// Return true if no match, otherwise return the rule by longest match
 		return (longestMatch == null) ? true : isAllowed;
+	}
+	
+	public void setLastModified(long modified) {
+		this.lastModified = modified;
+	}
+	
+	public long getLastModified() {
+		return this.lastModified;
 	}
 
 

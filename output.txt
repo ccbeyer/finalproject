@@ -91,9 +91,8 @@ Internet and web systems: scalability, interoperability (of data
 and code), atomicity and consistency models, replication, and
 location of resources, services, and data. Note that it is
 <i>not</i> about building database-backed or PHP/JSP/Servlet-based
-web sites (for this, see 
-<!-- <a href="http://www.cis.upenn.edu/~cis330/"> -->CIS&#160;<a
-href="http://www.cis.upenn.edu/~cis550/">450/550</a> or <a href=
+web sites (for this, see CIS&#160;<a href=
+"http://www.cis.upenn.edu/~cis550/">450/550</a> or <a href=
 "http://www.cis.upenn.edu/~nets212/">NETS&#160;212</a>). Here, we
 will learn how a Servlet server <i>itself</i> is built!
 <p>We will examine how XML standards enable information exchange;
@@ -190,9 +189,7 @@ resources</b></font></td>
 <td></td>
 <td>We will be using <a href="http://www.piazza.com/">Piazza</a>
 for course-related discussions; please sign up <a href=
-"http://piazza.com/upenn/spring2015/cis455555">here</a>. 
-<!--  A <a href="reading.html">reading list</a> is also available.-->
-</td>
+"http://piazza.com/upenn/spring2015/cis455555">here</a>. </td>
 </tr>
 <tr>
 <td colspan="3" height="15"></td>
